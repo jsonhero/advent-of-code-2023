@@ -123,7 +123,7 @@ fn problem_b() {
     println!("Problem B: {}", total);
 }
 fn main() {
-    // problem_a();
+    problem_a();
     problem_b();
 }
 
