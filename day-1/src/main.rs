@@ -20,8 +20,6 @@ fn problem_a() {
     let mut lines = input.lines();
     loop {
         if let Some(line) = lines.next() {
-            println!("Got line: {}", line);
-
             let mut left_char: Option<char> = None;
             let mut right_char: Option<char> = None;
 
@@ -52,92 +50,19 @@ fn problem_a() {
         }
     }
 
-    println!("Total: {}", total);
+    println!("Problem-A - total: {}", total);
 }
 
 
-
-/*
-
-example input:
-
-two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen
-
-brainstorm:
-
-static map of numbers 1-9
-
-as iterate through each line,
-then add char to string
-check if char combo matches any of the numbers in the map
-
-Map:
-one
-two
-three
-four
-five
-six
-seven
-eight
-nine
-
-ie.
-oone2
-
-Could do look ahead each time first char matches?
-
-
-O(n * maplength)
-Check if all chars after match?
-t = two, three
-f = four, five
-
-Preprocessed token map?
-
-f {
-    i {
-        v {
-            e
-        }
-    }
-    o {
-        u {
-            r
-        }
-        
-    }
-}
-
-Each iteration of a letter brings you one deeper in the map depending on next letter
-
-This leads to O(1) lookup speed well iterating, but requires some setup ahead of time.
-
-
-
-Brute force method = O(n * log n) + O(1)
-
-Create map of word numbers.
-Iterate through each letter, then iterate through every combonation of next letters from that starting letter, for every combo then lookup in the map if there's a matching word
-
-
-*/
 #[derive(Debug)]
 struct TreeNode {
     children: HashMap<char, TreeNode>,
     is_end_of_word: bool,
-    value: Option<char>
+    value: Option<i32>
 }
 
-
 impl TreeNode {
-    fn new(value: Option<char>) -> TreeNode {
+    fn new(value: Option<i32>) -> TreeNode {
         TreeNode {
             children: HashMap::new(),
             is_end_of_word: false,
@@ -145,7 +70,7 @@ impl TreeNode {
         }
     }
 
-    fn insert(&mut self, word: &str, value: char) {
+    fn insert(&mut self, word: &str, value: i32) {
         let mut current_node = self;
 
 
@@ -157,67 +82,149 @@ impl TreeNode {
     }
 }
 
+struct Number {
+    word: &'static str,
+    value: i32,
+}
+
+impl Number {
+    fn new(word: &'static str, value: i32) -> Self {
+        Number {
+            word,
+            value
+        }
+    }
+}
+
 fn problem_b() {
     let mut root = TreeNode::new(None);
 
+    let numbers: [Number; 18] = [
+        Number::new("one", 1),
+        Number::new("two", 2),
+        Number::new("three", 3),
+        Number::new("four", 4),
+        Number::new("five", 5),
+        Number::new("six", 6),
+        Number::new("seven", 7),
+        Number::new("eight", 8),
+        Number::new("nine", 9),
+        Number::new("1", 1),
+        Number::new("2", 2),
+        Number::new("3", 3),
+        Number::new("4", 4),
+        Number::new("5", 5),
+        Number::new("6", 6),
+        Number::new("7", 7),
+        Number::new("8", 8),
+        Number::new("9", 9),
+    ];
+
+
     // setup
-    root.insert("one", '1');
-    root.insert("two", '2');
-    root.insert("three", '3');
-    root.insert("four", '4');
-    root.insert("five", '5');
-    root.insert("six", '6');
-    root.insert("seven", '7');
-    root.insert("eight", '8');
-    root.insert("nine", '9');
+    for num in numbers {
+        root.insert(num.word, num.value);
+        if num.word.len() > 1 {
+            let reversed = num.word.chars().rev().collect::<String>();
+            root.insert(&reversed, num.value);
+        }
+    }
 
 
 
     let input = fs::read_to_string("src/input.txt").unwrap();
-    let mut total: i32 = 0;
+
+    let mut total = 0;
 
     let mut lines = input.lines();
     loop {
         if let Some(line) = lines.next() {
-
-            let mut left_char: Option<char> = None;
-            let mut right_char: Option<char> = None;
-
             let mut word_node: Option<&TreeNode> = None;
+            let mut index = 0;
+            let mut word_index = index;
 
-            println!("{}", line);
-            for index in 0..line.len() {
 
-                let ch = line.chars().nth(index).unwrap();
-                // println!("{}", ch);
-
-                if ch.is_numeric() {
-
-                    if left_char.is_none() {
-                        left_char = Some(ch);
+            'outer: loop {
+                let outer_ch = line.chars().nth(index);                
+                match outer_ch {
+                    None => break 'outer,
+                    Some(ch) => {                        
+                        match word_node {
+                            None => {
+                                if root.children.contains_key(&ch) {
+                                    word_index = index;
+                                    word_node = root.children.get(&ch);
+                                }
+                            },
+                            Some(node) => {
+                                if node.children.contains_key(&ch) {
+                                    word_node = node.children.get(&ch);
+                                } else {
+                                    index = word_index;
+                                    word_node = None;
+                                }
+                            }
+                        }
                     }
-                    right_char = Some(ch);
-                }
-                
-                if word_node.is_some() && word_node.unwrap().children.contains_key(&ch) {
-                    word_node = word_node.unwrap().children.get(&ch);
-                } else if root.children.contains_key(&ch) {
-                    word_node = root.children.get(&ch);
-                } else {
-                    word_node = None;
                 }
 
-                if word_node.is_some() && word_node.unwrap().is_end_of_word {
-                    if left_char.is_none() {
-                        left_char = Some(word_node.unwrap().value.unwrap())
+                match word_node {
+                    None => {},
+                    Some(node) => {
+                        if node.is_end_of_word {
+                            total += node.value.unwrap() * 10;
+                            break 'outer;
+                        }
                     }
-                    right_char = Some(word_node.unwrap().value.unwrap())
                 }
+
+                index += 1;
             }
+            
+            word_node = None;
+            index = line.len() - 1;
+            word_index = index;
 
-            if left_char.is_some() {
-                println!("Actual: {}", left_char.unwrap().to_string() + &right_char.unwrap().to_string());
-                total += (left_char.unwrap().to_string() + &right_char.unwrap().to_string()).parse::<i32>().unwrap()
+            'outer: loop {
+                let outer_ch = line.chars().nth(index);
+
+                match outer_ch {
+                    None => break 'outer,
+                    Some(ch) => {                        
+                        match word_node {
+                            None => {
+                                if root.children.contains_key(&ch) {
+                                    word_index = index;
+                                    word_node = root.children.get(&ch);
+                                }
+                            },
+                            Some(node) => {
+                                if node.children.contains_key(&ch) {
+                                    word_node = node.children.get(&ch);
+                                } else {
+                                    index = word_index;
+                                    word_node = None;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                match word_node {
+                    None => {},
+                    Some(node) => {
+                        if node.is_end_of_word {
+                            total += node.value.unwrap();
+                            break 'outer;
+                        }
+                    }
+                }
+
+                if index > 0  {
+                    index -= 1;
+                } else {
+                    break;
+                }
             }
         } else {
             break;
@@ -232,3 +239,4 @@ fn main() {
     problem_a();
     problem_b();
 }
+
