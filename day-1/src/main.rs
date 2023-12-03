@@ -96,6 +96,7 @@ impl Number {
     }
 }
 
+// Needlessly overcomplicated this problem by adding a precompute map to improve time for words to O(1)-ish, but I'm just here for fun learning Rust
 fn problem_b() {
     let mut root = TreeNode::new(None);
 
