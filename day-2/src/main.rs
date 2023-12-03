@@ -76,7 +76,6 @@ fn problem_b() {
 
             let pattern = Regex::new(r"(\d+)\s+(\w+)").unwrap();
 
-            println!("GAME ID {} ", game_id);
             let game_sets = game_split.nth(0).unwrap().split(";");
 
             let mut max_red = 0;

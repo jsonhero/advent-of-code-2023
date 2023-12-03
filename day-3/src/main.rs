@@ -1,4 +1,4 @@
-use std::{fs, ops::Add};
+use std::fs;
 
 
 const SYMBOLS: [char; 10] = ['*', '+', '#', '-', '&', '/', '@', '$', '%', '='];
