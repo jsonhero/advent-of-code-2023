@@ -64,20 +64,7 @@ fn problem_a() {
     }
 
     let mut sum = 0;
-
-    /*
-    As we iterate through a number, do check on each new num, check bottom and top
-    Probably only need to do diagonal checks on first and last number in part
-
-    first/last num: bottom, top, diagonal, in front/back
-    sequential num: bottom, top
-
-
-    first: check if symbol before,
-
-    do look ahead at next num
-     */
-
+    
     for (row_idx, row_vec) in matrix.iter().enumerate() {
 
         let mut num_str = String::new();
