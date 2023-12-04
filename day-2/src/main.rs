@@ -72,8 +72,6 @@ fn problem_b() {
         if let Some(line) = lines.next() {
             let mut game_split = line.split(":");
 
-            let game_id = game_split.nth(0).unwrap().split(" ").nth(1).unwrap().parse::<i32>().unwrap();
-
             let pattern = Regex::new(r"(\d+)\s+(\w+)").unwrap();
 
             let game_sets = game_split.nth(0).unwrap().split(";");
