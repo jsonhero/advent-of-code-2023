@@ -110,7 +110,7 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
     for range in ranges.iter() {
         let start = range[0];
         let end = range[1];
-        println!("r: {}-{}", start, end);
+        // println!("r: {}-{}", start, end);
 
         let saved_range_len = next_ranges.len();
 
@@ -124,13 +124,13 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
             let source_start = source;
             let source_end = source + list_range - 1;
 
-            println!("list: {}-{}: {}", source_start, source_end, list_range);
+            // println!("list: {}-{}: {}", source_start, source_end, list_range);
 
             // starts in range, no cap
             if start >= source_start && end <= source_end {
                 let next_start = dest + (start - source_start);
                 let next_end = dest + (end - source_start);
-                println!("     within: {}-{}", start, end);
+                // println!("     within: {}-{}", start, end);
 
                 next_ranges.push(vec![next_start, next_end]);
             } 
@@ -138,7 +138,7 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
             else if start >= source_start && start <= source_end {
                 let next_start = dest + (start - source_start);
                 let next_end = dest + (source_end - source_start);
-                println!("     start high: {}-{}", start, end);
+                // println!("     start high: {}-{}", start, end);
                 next_ranges.push(vec![next_start, next_end]);
 
                 let reprocess_ranges = vec![vec![source_end + 1, end]];
@@ -149,7 +149,7 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
             else if start <= source_start && end >= source_start {
                 let next_start = dest;
                 let next_end = dest + (end - source_start);
-                println!("     start low: {}-{}", start, end);
+                // println!("     start low: {}-{}", start, end);
                 next_ranges.push(vec![next_start, next_end]);
 
                 let reprocess_ranges = vec![vec![start, source_start - 1]];
@@ -158,7 +158,7 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
             } 
             // full range, if range within then run middle part through that matches, and outer edges become ranges
             else if source_start > start && source_end < end {
-                println!("     split: {}-{}", start, end);
+                // println!("     split: {}-{}", start, end);
 
                 let inner_next_start = dest;
                 let inner_next_end = dest + list_range;
@@ -181,7 +181,7 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
         }
 
         if saved_range_len == next_ranges.len() {
-            println!("     outer: {}-{}", start, end);
+            // println!("     outer: {}-{}", start, end);
             next_ranges.push(range.clone());
         }
     }
@@ -246,9 +246,9 @@ fn problem_b() {
 
         let next_ranges = process_ranges_map(current_ranges, map);
         current_ranges = next_ranges;
-        println!("----------");
-        println!("{}: {:?}", map_id, current_ranges);
-        println!("----------");
+        // println!("----------");
+        // println!("{}: {:?}", map_id, current_ranges);
+        // println!("----------");
     }
 
     let mut lowest_loc: Option<i64> = None;
