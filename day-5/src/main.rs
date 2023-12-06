@@ -135,6 +135,9 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
                 next_ranges.push(vec![next_start, next_end]);
             } 
             // starts high, cap highest
+
+            //      -------
+            //    ====
             else if start >= source_start && start <= source_end {
                 let next_start = dest + (start - source_start);
                 let next_end = dest + (source_end - source_start);
@@ -146,7 +149,10 @@ fn process_ranges_map(ranges: Vec<Vec<i64>>, map: &Vec<Vec<i64>>) -> Vec<Vec<i64
                 next_ranges.append(&mut next);
             } 
             // starts less, cap lowest
-            else if start <= source_start && end >= source_start {
+
+            // --------
+            //   ========
+            else if start <= source_start && end >= source_start && end <= source_end {
                 let next_start = dest;
                 let next_end = dest + (end - source_start);
                 // println!("     start low: {}-{}", start, end);
